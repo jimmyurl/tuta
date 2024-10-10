@@ -1,164 +1,304 @@
 import 'package:flutter/material.dart';
-import 'lesson_details_screen.dart'; // Import the details screen
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tutor/ui/base_scaffold.dart'; // Ensure to import BaseScaffold
 
-class Lesson {
-  final String id;
-  final String title;
-  final String tutorName;
-  final String description;
-  final double price;
+class LessonsScreen extends StatefulWidget {
+  const LessonsScreen({Key? key}) : super(key: key);
 
-  Lesson({
-    required this.id,
-    required this.title,
-    required this.tutorName,
-    required this.description,
-    required this.price,
-  });
+  @override
+  _LessonsScreenState createState() => _LessonsScreenState();
 }
 
-class LessonsScreen extends StatelessWidget {
-  final List<Lesson> educationalLessons = [
-    Lesson(
-      id: '1',
-      title: 'Introduction to Flutter',
-      tutorName: 'John Doe',
-      description: 'Learn the basics of Flutter development',
-      price: 19.99,
-    ),
-    Lesson(
-      id: '2',
-      title: 'Advanced Python Programming',
-      tutorName: 'Jane Smith',
-      description: 'Master advanced Python concepts',
-      price: 24.99,
-    ),
-  ];
+class _LessonsScreenState extends State<LessonsScreen> {
+  List<Map<String, dynamic>> educationalLessons = [];
+  List<Map<String, dynamic>> personalDevelopmentLessons = [];
+  List<Map<String, dynamic>> cuisineLessons = [];
 
-  final List<Lesson> personalDevelopmentLessons = [
-    Lesson(
-      id: '3',
-      title: 'Time Management Skills',
-      tutorName: 'Alice Brown',
-      description: 'Develop effective time management techniques',
-      price: 15.99,
-    ),
-    Lesson(
-      id: '4',
-      title: 'Public Speaking Masterclass',
-      tutorName: 'Bob Green',
-      description: 'Enhance your public speaking abilities',
-      price: 22.99,
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchEducationalLessons();
+    _fetchPersonalDevelopmentLessons();
+    _fetchCuisineLessons();
+  }
 
-  final List<Lesson> cuisineLessons = [
-    Lesson(
-      id: '5',
-      title: 'Italian Cooking Essentials',
-      tutorName: 'Chef Maria',
-      description: 'Learn the basics of Italian cuisine',
-      price: 30.00,
-    ),
-    Lesson(
-      id: '6',
-      title: 'Sushi Making Workshop',
-      tutorName: 'Chef Sato',
-      description: 'Master the art of sushi making',
-      price: 35.00,
-    ),
-  ];
+  // Fetching educational lessons data from Supabase
+  Future<void> _fetchEducationalLessons() async {
+    final client = Supabase.instance.client;
+
+    try {
+      final response = await client
+          .from('educational_lessons')
+          .select('video_urls, title, description')
+          .order('id', ascending: true)
+          .limit(10);
+
+      if (response != null && response.isNotEmpty) {
+        final List<Map<String, dynamic>> data = (response as List<dynamic>)
+            .map((lesson) => {
+                  'video_urls': lesson['video_urls'] as List<dynamic>,
+                  'title': lesson['title'] as String,
+                  'description': lesson['description'] as String,
+                })
+            .toList();
+
+        setState(() {
+          educationalLessons = data;
+        });
+      } else {
+        throw 'No data available in the educational lessons table.';
+      }
+    } catch (err) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error fetching educational lessons data: $err'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
+  }
+
+  // Fetching personal development lessons from Supabase
+  Future<void> _fetchPersonalDevelopmentLessons() async {
+    final client = Supabase.instance.client;
+
+    try {
+      final response = await client
+          .from('personal_development_lessons')
+          .select('video_urls, title, description')
+          .order('id', ascending: true)
+          .limit(10);
+
+      if (response != null && response.isNotEmpty) {
+        final List<Map<String, dynamic>> data = (response as List<dynamic>)
+            .map((lesson) => {
+                  'video_urls': lesson['video_urls'] as List<dynamic>,
+                  'title': lesson['title'] as String,
+                  'description': lesson['description'] as String,
+                })
+            .toList();
+
+        setState(() {
+          personalDevelopmentLessons = data;
+        });
+      } else {
+        throw 'No data available in the personal development lessons table.';
+      }
+    } catch (err) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text('Error fetching personal development lessons data: $err'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
+  }
+
+  // Fetching cuisine lessons data from Supabase
+  Future<void> _fetchCuisineLessons() async {
+    final client = Supabase.instance.client;
+
+    try {
+      final response = await client
+          .from('cuisine_lessons')
+          .select('video_urls, title, description')
+          .order('id', ascending: true)
+          .limit(10);
+
+      if (response != null && response.isNotEmpty) {
+        final List<Map<String, dynamic>> data = (response as List<dynamic>)
+            .map((lesson) => {
+                  'video_urls': lesson['video_urls'] as List<dynamic>,
+                  'title': lesson['title'] as String,
+                  'description': lesson['description'] as String,
+                })
+            .toList();
+
+        setState(() {
+          cuisineLessons = data;
+        });
+      } else {
+        throw 'No data available in the cuisine lessons table.';
+      }
+    } catch (err) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error fetching cuisine lessons data: $err'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BaseScaffold(
       appBar: AppBar(
-        title: Text('Available Lessons'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/icons/tuta.png', // Ensure the path is correct
+              fit: BoxFit.contain,
+              height: 40, // Adjust height as needed
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.zero,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildCategoryCarousel(context, 'Educational', educationalLessons),
-            _buildCategoryCarousel(
-                context, 'Personal Development', personalDevelopmentLessons),
-            _buildCategoryCarousel(context, 'Cuisines', cuisineLessons),
+            const SizedBox(height: 4.0),
+            const Text(
+              'Educational Lessons',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            _buildCarousel(
+                educationalLessons, 'No educational lessons available'),
+            const SizedBox(height: 10.0),
+            const Text(
+              'Personal Development Lessons',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            _buildCarousel(personalDevelopmentLessons,
+                'No personal development lessons available'),
+            const SizedBox(height: 10.0),
+            const Text(
+              'Cuisine Lessons',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            _buildCarousel(cuisineLessons, 'No cuisine lessons available'),
+            const SizedBox(height: 10.0),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCategoryCarousel(
-      BuildContext context, String categoryTitle, List<Lesson> lessons) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            categoryTitle,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        SizedBox(
-          height: 200, // Height of the carousel
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: lessons.length,
-            itemBuilder: (context, index) {
-              final lesson = lessons[index];
-              return _buildLessonCard(context, lesson);
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLessonCard(BuildContext context, Lesson lesson) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LessonDetailsScreen(lesson: lesson),
-          ),
-        );
-      },
+  // A method to build the carousel for each category
+  Widget _buildCarousel(List<Map<String, dynamic>> data, String emptyMessage) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      elevation: 4,
       child: Container(
-        width: 150, // Width of each card in the carousel
-        margin: EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          color: Colors.blueAccent,
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                lesson.title,
-                style: TextStyle(fontSize: 16, color: Colors.white),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+        height: MediaQuery.of(context).size.height *
+            0.25, // Adjust height as needed
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: CarouselSlider(
+                options: CarouselOptions(
+                  autoPlay: true,
+                  autoPlayInterval: const Duration(seconds: 10),
+                  autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enableInfiniteScroll: true,
+                  enlargeCenterPage: true,
+                ),
+                items: data.isNotEmpty
+                    ? data.map((item) {
+                        String videoUrl = (item['video_urls'] != null &&
+                                (item['video_urls'] as List).isNotEmpty)
+                            ? item['video_urls'][0] as String
+                            : 'https://via.placeholder.com/150';
+
+                        return Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Expanded(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: videoUrl !=
+                                          'https://via.placeholder.com/150'
+                                      ? _buildVideoThumbnail(videoUrl)
+                                      : Image.network(
+                                          videoUrl,
+                                          fit: BoxFit.cover,
+                                        ),
+                                ),
+                              ),
+                              const SizedBox(height: 4), // Adjust spacing
+                              Text(
+                                item['title'] ?? 'No Title',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 2), // Adjust spacing
+                              Text(
+                                item['description'] ?? 'No Description',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList()
+                    : [
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Center(child: Text(emptyMessage)),
+                        ),
+                      ],
               ),
-              SizedBox(height: 10),
-              Text(
-                '${lesson.tutorName}',
-                style: TextStyle(fontSize: 12, color: Colors.white70),
-              ),
-              SizedBox(height: 10),
-              Text(
-                '\$${lesson.price.toStringAsFixed(2)}',
-                style: TextStyle(fontSize: 14, color: Colors.white),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
+
+  // Method to generate a video thumbnail for a given video URL
+  Widget _buildVideoThumbnail(String videoUrl) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Placeholder for the video player or thumbnail
+        Image.network(
+          'https://via.placeholder.com/400x300', // Replace with your video thumbnail logic
+          fit: BoxFit.cover,
+        ),
+        const Icon(
+          Icons.play_circle_fill,
+          color: Colors.white,
+          size: 64,
+        ),
+      ],
+    );
+  }
+}
+
+class Lesson {
+  final String title;
+  final String tutorName;
+  final String description;
+  final String price;
+  final List<String> video_urls; // List of video URLs
+
+  Lesson({
+    required this.title,
+    required this.tutorName,
+    required this.description,
+    required this.price,
+    required this.video_urls,
+  });
 }

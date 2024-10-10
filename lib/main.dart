@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tutor/ui/lessons_screen.dart';
+import 'package:tutor/ui/base_scaffold.dart';
 
 void main() {
   runApp(MeetYourTutorApp());
