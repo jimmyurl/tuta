@@ -121,6 +121,9 @@ class _LessonsScreenState extends State<LessonsScreen>
             child: TabBar(
               controller: _tabController,
               isScrollable: true,
+              indicatorColor: Colors.blue,
+              labelColor: Colors.blue,
+              unselectedLabelColor: Colors.grey,
               tabs: const [
                 Tab(text: 'Educational Lessons'),
                 Tab(text: 'Personal Development Lessons'),
@@ -146,7 +149,7 @@ class _LessonsScreenState extends State<LessonsScreen>
   Widget _buildCarousel(List<Map<String, dynamic>> data, String emptyMessage) {
     return CarouselSlider(
       options: CarouselOptions(
-        height: MediaQuery.of(context).size.height * 0.6,
+        height: MediaQuery.of(context).size.height * 0.55, // Adjusted height
         autoPlay: false,
         enlargeCenterPage: true,
         viewportFraction: 0.8,
@@ -185,24 +188,28 @@ class _LessonsScreenState extends State<LessonsScreen>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  item['title'] ?? 'No Title',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+                                Flexible(
+                                  child: Text(
+                                    item['title'] ?? 'No Title',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  item['description'] ?? 'No Description',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
+                                Flexible(
+                                  child: Text(
+                                    item['description'] ?? 'No Description',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),

@@ -1,5 +1,8 @@
 
-# Lessons App
+```markdown
+# Tuta App
+
+![Tuta Logo](assets/icons/tuta.png)
 
 ## Overview
 
@@ -30,7 +33,7 @@ The **Tuta App** is a Flutter application that provides users with a variety of 
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/lessons-app.git
+   git clone https://github.com/jimmyurl/tuta.git
    cd lessons-app
    ```
 
@@ -57,7 +60,6 @@ The **Tuta App** is a Flutter application that provides users with a variety of 
    ```bash
    flutter run
    ```
-
 
 ## Contributing
 
