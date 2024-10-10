@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tutor/ui/lessons_screen.dart';
 import 'package:tutor/ui/search_screen.dart'; // Import the SearchScreen
 import 'package:tutor/ui/video_upload_screen.dart'; // Import the VideoUploadScreen
 import 'package:tutor/ui/profile_screen.dart'; // Import the ProfileScreen
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized
+  await Supabase.initialize(
+    url:
+        'https://xfihpvkbzppaejluyqoq.supabase.co', // Replace with your Supabase URL
+    anonKey: 'your_anon_key', // Replace with your Supabase anon key
+  );
   runApp(MeetYourTutorApp());
 }
 
