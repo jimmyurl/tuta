@@ -1,5 +1,5 @@
 
-```markdown
+
 # Tuta App
 
 ![Tuta Logo](assets/icons/tuta.png)
