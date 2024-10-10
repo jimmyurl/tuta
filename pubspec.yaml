@@ -33,6 +33,10 @@ flutter:
     - assets/images/italian_cooking.jpg
     - assets/images/sushi_making.jpg
     - assets/icons/tuta.png
+    - assets/icons/home.png
+    - assets/icons/search.png
+    - assets/icons/upload.png
+    - assets/icons/profile.png
 
   # fonts:
   #   - family: Schyler

@@ -10,17 +10,28 @@ class LessonsScreen extends StatefulWidget {
   _LessonsScreenState createState() => _LessonsScreenState();
 }
 
-class _LessonsScreenState extends State<LessonsScreen> {
+class _LessonsScreenState extends State<LessonsScreen>
+    with SingleTickerProviderStateMixin {
   List<Map<String, dynamic>> educationalLessons = [];
   List<Map<String, dynamic>> personalDevelopmentLessons = [];
   List<Map<String, dynamic>> cuisineLessons = [];
 
+  late TabController _tabController;
+
   @override
   void initState() {
     super.initState();
+    _tabController =
+        TabController(length: 3, vsync: this); // Initialize the TabController
     _fetchEducationalLessons();
     _fetchPersonalDevelopmentLessons();
     _fetchCuisineLessons();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose(); // Dispose of the TabController
+    super.dispose();
   }
 
   // Fetching educational lessons data from Supabase
@@ -146,44 +157,32 @@ class _LessonsScreenState extends State<LessonsScreen> {
             ),
           ],
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.zero,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 4.0),
-            const Text(
-              'Educational Lessons',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+        bottom: PreferredSize(
+          preferredSize:
+              const Size.fromHeight(48.0), // Set the height for the TabBar
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true, // Make the TabBar scrollable
+              tabs: const [
+                Tab(text: 'Educational Lessons'),
+                Tab(text: 'Personal Development Lessons'),
+                Tab(text: 'Cuisine Lessons'),
+              ],
             ),
-            _buildCarousel(
-                educationalLessons, 'No educational lessons available'),
-            const SizedBox(height: 10.0),
-            const Text(
-              'Personal Development Lessons',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            _buildCarousel(personalDevelopmentLessons,
-                'No personal development lessons available'),
-            const SizedBox(height: 10.0),
-            const Text(
-              'Cuisine Lessons',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            _buildCarousel(cuisineLessons, 'No cuisine lessons available'),
-            const SizedBox(height: 10.0),
-          ],
+          ),
         ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildCarousel(
+              educationalLessons, 'No educational lessons available'),
+          _buildCarousel(personalDevelopmentLessons,
+              'No personal development lessons available'),
+          _buildCarousel(cuisineLessons, 'No cuisine lessons available'),
+        ],
       ),
     );
   }
