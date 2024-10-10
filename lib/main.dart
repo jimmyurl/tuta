@@ -8,8 +8,7 @@ import 'package:tutor/ui/profile_screen.dart'; // Import the ProfileScreen
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized
   await Supabase.initialize(
-    url:
-        'https://xfihpvkbzppaejluyqoq.supabase.co', // Replace with your Supabase URL
+    url: 'supabase url', // Replace with your Supabase URL
     anonKey: 'your_anon_key', // Replace with your Supabase anon key
   );
   runApp(MeetYourTutorApp());
