@@ -116,20 +116,17 @@ class _LessonsScreenState extends State<LessonsScreen>
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48.0),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              indicatorColor: Colors.blue,
-              labelColor: Colors.blue,
-              unselectedLabelColor: Colors.grey,
-              tabs: const [
-                Tab(text: 'Educational Lessons'),
-                Tab(text: 'Personal Development Lessons'),
-                Tab(text: 'Cuisine Lessons'),
-              ],
-            ),
+          child: TabBar(
+            controller: _tabController,
+            isScrollable: true,
+            indicatorColor: Colors.blue,
+            labelColor: Colors.blue,
+            unselectedLabelColor: Colors.grey,
+            tabs: const [
+              Tab(text: 'Educational'),
+              Tab(text: 'Personal Development'),
+              Tab(text: 'Cuisine'),
+            ],
           ),
         ),
       ),
@@ -149,12 +146,14 @@ class _LessonsScreenState extends State<LessonsScreen>
   Widget _buildCarousel(List<Map<String, dynamic>> data, String emptyMessage) {
     return CarouselSlider(
       options: CarouselOptions(
-        height: MediaQuery.of(context).size.height * 0.55, // Adjusted height
+        height: MediaQuery.of(context).size.height * 0.75,
         autoPlay: false,
         enlargeCenterPage: true,
-        viewportFraction: 0.8,
-        aspectRatio: 2.0,
+        viewportFraction: 0.85,
+        aspectRatio: 16 / 9,
         initialPage: 0,
+        enableInfiniteScroll: false,
+        padEnds: false,
       ),
       items: data.isNotEmpty
           ? data.map((item) {
@@ -165,57 +164,59 @@ class _LessonsScreenState extends State<LessonsScreen>
 
               return Builder(
                 builder: (BuildContext context) {
-                  return Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(16)),
-                            child: _buildVideoThumbnail(videoUrl),
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            flex: 4,
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(16)),
+                              child: _buildVideoThumbnail(videoUrl),
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Flexible(
-                                  child: Text(
+                          Expanded(
+                            flex: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
                                     item['title'] ?? 'No Title',
                                     style: const TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Flexible(
-                                  child: Text(
-                                    item['description'] ?? 'No Description',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 8),
+                                  Expanded(
+                                    child: Text(
+                                      item['description'] ?? 'No Description',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey,
+                                      ),
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
