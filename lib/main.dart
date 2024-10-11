@@ -9,9 +9,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized
   await Supabase.initialize(
     url:
-        'https://xfihpvkbzppaejluyqoq.supabase.co', // Replace with your Supabase URL
+        'your-supabase URL', // Replace with your Supabase URL
     anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmaWhwdmtienBwYWVqbHV5cW9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg1NDQzMzgsImV4cCI6MjA0NDEyMDMzOH0.U30_ovXdjGrovUZhBeVbeXtX-Xg29BPNZF9mhz7USfM', // Replace with your Supabase anon key
+        'your-anon-key', // Replace with your Supabase anon key
   );
   runApp(MeetYourTutorApp());
 }
