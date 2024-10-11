@@ -13,9 +13,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
+<<<<<<< HEAD
     url: 'https://xfihpvkbzppaejluyqoq.supabase.co',
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmaWhwdmtienBwYWVqbHV5cW9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg1NDQzMzgsImV4cCI6MjA0NDEyMDMzOH0.U30_ovXdjGrovUZhBeVbeXtX-Xg29BPNZF9mhz7USfM',
+=======
+    url:
+        'your-supabase URL', // Replace with your Supabase URL
+    anonKey:
+        'your-anon-key', // Replace with your Supabase anon key
+>>>>>>> 650a929d121e73a89aa2048eb59651f22c0f3223
   );
 
   SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -18,13 +18,14 @@ class _LessonsScreenState extends State<LessonsScreen>
   List<Map<String, dynamic>> educationalLessons = [];
   List<Map<String, dynamic>> personalDevelopmentLessons = [];
   List<Map<String, dynamic>> cuisineLessons = [];
+  List<Map<String, dynamic>> healthLessons = []; // New list for health lessons
 
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this); // Updated to 4 tabs
     _fetchAllLessons();
   }
 
@@ -42,6 +43,9 @@ class _LessonsScreenState extends State<LessonsScreen>
           (data) => setState(() => personalDevelopmentLessons = data)),
       _fetchLessons(
           'cuisine_lessons', (data) => setState(() => cuisineLessons = data)),
+      _fetchLessons(
+          'health_lessons', // Fetching health lessons
+          (data) => setState(() => healthLessons = data)),
     ]);
   }
 
@@ -126,6 +130,7 @@ class _LessonsScreenState extends State<LessonsScreen>
               Tab(text: 'Educational'),
               Tab(text: 'Personal Development'),
               Tab(text: 'Cuisine'),
+              Tab(text: 'Health'), // New Health tab
             ],
           ),
         ),
@@ -138,6 +143,8 @@ class _LessonsScreenState extends State<LessonsScreen>
           _buildCarousel(personalDevelopmentLessons,
               'No personal development lessons available'),
           _buildCarousel(cuisineLessons, 'No cuisine lessons available'),
+          _buildCarousel(
+              healthLessons, 'No health lessons available'), // Health carousel
         ],
       ),
     );
@@ -309,11 +316,11 @@ class _LessonsScreenState extends State<LessonsScreen>
                 child: IconButton(
                   icon: const Icon(
                     Icons.play_circle_fill,
-                    color: Colors.white,
                     size: 64,
+                    color: Colors.white,
                   ),
                   onPressed: () {
-                    // TODO: Implement video playback
+                    // TODO: Implement video play action
                     print('Play video: $videoUrl');
                   },
                 ),
@@ -331,9 +338,10 @@ class _LessonsScreenState extends State<LessonsScreen>
     return Container(
       color: Colors.grey[300],
       child: const Center(
-        child: Text(
-          'Thumbnail loading...',
-          style: TextStyle(color: Colors.black54),
+        child: Icon(
+          Icons.video_library,
+          size: 64,
+          color: Colors.grey,
         ),
       ),
     );
