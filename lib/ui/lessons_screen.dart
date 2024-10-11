@@ -5,14 +5,10 @@ import 'package:tutor/ui/base_scaffold.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-
-import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:tutor/ui/base_scaffold.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:dio/dio.dart';
 
 class LessonsScreen extends StatefulWidget {
   const LessonsScreen({Key? key}) : super(key: key);
@@ -26,20 +22,24 @@ class _LessonsScreenState extends State<LessonsScreen>
   List<Map<String, dynamic>> educationalLessons = [];
   List<Map<String, dynamic>> personalDevelopmentLessons = [];
   List<Map<String, dynamic>> cuisineLessons = [];
-  List<Map<String, dynamic>> healthLessons = []; // New list for health lessons
+  List<Map<String, dynamic>> healthLessons = [];
 
   late TabController _tabController;
+  VideoPlayerController? _videoPlayerController;
+  ChewieController? _chewieController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this); // Updated to 4 tabs
+    _tabController = TabController(length: 4, vsync: this);
     _fetchAllLessons();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _videoPlayerController?.dispose();
+    _chewieController?.dispose();
     super.dispose();
   }
 
@@ -52,8 +52,7 @@ class _LessonsScreenState extends State<LessonsScreen>
       _fetchLessons(
           'cuisine_lessons', (data) => setState(() => cuisineLessons = data)),
       _fetchLessons(
-          'health_lessons', // Fetching health lessons
-          (data) => setState(() => healthLessons = data)),
+          'health_lessons', (data) => setState(() => healthLessons = data)),
     ]);
   }
 
@@ -95,20 +94,59 @@ class _LessonsScreenState extends State<LessonsScreen>
     }
   }
 
-  Future<String?> _generateThumbnail(String videoUrl) async {
+  void _playVideo(String videoUrl) {
+    _videoPlayerController = VideoPlayerController.network(videoUrl);
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController!,
+      autoPlay: true,
+      looping: false,
+      aspectRatio: 16 / 9,
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: Chewie(controller: _chewieController!),
+          ),
+        );
+      },
+    ).then((_) {
+      _videoPlayerController!.pause();
+      _videoPlayerController!.dispose();
+      _chewieController!.dispose();
+    });
+  }
+
+  void _toggleFavorite(Map<String, dynamic> lesson) {
+    // TODO: Implement favorite functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Added to favorites: ${lesson['title']}')),
+    );
+  }
+
+  void _shareLesson(Map<String, dynamic> lesson) {
+    Share.share('Check out this lesson: ${lesson['title']}');
+  }
+
+  Future<void> _downloadLesson(Map<String, dynamic> lesson) async {
+    final dio = Dio();
+    final tempDir = await getTemporaryDirectory();
+    final fileName = '${lesson['title']}.mp4';
+    final savePath = '${tempDir.path}/$fileName';
+
     try {
-      final thumbnailPath = await VideoThumbnail.thumbnailFile(
-        video: videoUrl,
-        thumbnailPath: (await getTemporaryDirectory()).path,
-        imageFormat: ImageFormat.JPEG,
-        maxHeight: 300,
-        quality: 75,
+      await dio.download(lesson['video_urls'][0], savePath);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Downloaded: $fileName')),
       );
-      print('Generated thumbnail for $videoUrl: $thumbnailPath');
-      return thumbnailPath;
     } catch (e) {
-      print('Error generating thumbnail for $videoUrl: $e');
-      return null;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Download failed: $e')),
+      );
     }
   }
 
@@ -138,7 +176,7 @@ class _LessonsScreenState extends State<LessonsScreen>
               Tab(text: 'Educational'),
               Tab(text: 'Personal Development'),
               Tab(text: 'Cuisine'),
-              Tab(text: 'Health'), // New Health tab
+              Tab(text: 'Health'),
             ],
           ),
         ),
@@ -151,8 +189,7 @@ class _LessonsScreenState extends State<LessonsScreen>
           _buildCarousel(personalDevelopmentLessons,
               'No personal development lessons available'),
           _buildCarousel(cuisineLessons, 'No cuisine lessons available'),
-          _buildCarousel(
-              healthLessons, 'No health lessons available'), // Health carousel
+          _buildCarousel(healthLessons, 'No health lessons available'),
         ],
       ),
     );
@@ -197,10 +234,14 @@ class _LessonsScreenState extends State<LessonsScreen>
                                 children: [
                                   Expanded(
                                     flex: 3,
-                                    child: ClipRRect(
-                                      borderRadius: const BorderRadius.vertical(
-                                          top: Radius.circular(16)),
-                                      child: _buildVideoThumbnail(videoUrl),
+                                    child: GestureDetector(
+                                      onTap: () => _playVideo(videoUrl),
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            const BorderRadius.vertical(
+                                                top: Radius.circular(16)),
+                                        child: _buildVideoThumbnail(videoUrl),
+                                      ),
                                     ),
                                   ),
                                   Expanded(
@@ -233,56 +274,37 @@ class _LessonsScreenState extends State<LessonsScreen>
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
-                                          // Icons Row inside the card
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              SizedBox(
-                                                  width:
-                                                      8), // Add space before the first icon
+                                              SizedBox(width: 8),
                                               GestureDetector(
-                                                onTap: () {
-                                                  // TODO: Implement favorite action
-                                                  print('Favorites pressed');
-                                                },
+                                                onTap: () =>
+                                                    _toggleFavorite(item),
                                                 child: Image.asset(
                                                   'assets/icons/love.png',
-                                                  height:
-                                                      24, // Adjust height as needed
+                                                  height: 24,
                                                 ),
                                               ),
-                                              SizedBox(
-                                                  width:
-                                                      16), // Space between love and share icons
+                                              SizedBox(width: 16),
                                               GestureDetector(
-                                                onTap: () {
-                                                  // TODO: Implement share action
-                                                  print('Share pressed');
-                                                },
+                                                onTap: () => _shareLesson(item),
                                                 child: Image.asset(
                                                   'assets/icons/share.png',
-                                                  height:
-                                                      24, // Adjust height as needed
+                                                  height: 24,
                                                 ),
                                               ),
-                                              SizedBox(
-                                                  width:
-                                                      16), // Space between share and download icons
+                                              SizedBox(width: 16),
                                               GestureDetector(
-                                                onTap: () {
-                                                  // TODO: Implement download action
-                                                  print('Download pressed');
-                                                },
+                                                onTap: () =>
+                                                    _downloadLesson(item),
                                                 child: Image.asset(
                                                   'assets/icons/download.png',
-                                                  height:
-                                                      24, // Adjust height as needed
+                                                  height: 24,
                                                 ),
                                               ),
-                                              SizedBox(
-                                                  width:
-                                                      8), // Add space after the last icon if needed
+                                              SizedBox(width: 8),
                                             ],
                                           ),
                                         ],
@@ -332,10 +354,7 @@ class _LessonsScreenState extends State<LessonsScreen>
                     color: Colors.white,
                     size: 50,
                   ),
-                  onPressed: () {
-                    // TODO: Play video
-                    print('Play video: $videoUrl');
-                  },
+                  onPressed: () => _playVideo(videoUrl),
                 ),
               ),
             ],
@@ -357,6 +376,23 @@ class _LessonsScreenState extends State<LessonsScreen>
         ),
       ),
     );
+  }
+
+  Future<String?> _generateThumbnail(String videoUrl) async {
+    try {
+      final thumbnailPath = await VideoThumbnail.thumbnailFile(
+        video: videoUrl,
+        thumbnailPath: (await getTemporaryDirectory()).path,
+        imageFormat: ImageFormat.JPEG,
+        maxHeight: 300,
+        quality: 75,
+      );
+      print('Generated thumbnail for $videoUrl: $thumbnailPath');
+      return thumbnailPath;
+    } catch (e) {
+      print('Error generating thumbnail for $videoUrl: $e');
+      return null;
+    }
   }
 }
 
