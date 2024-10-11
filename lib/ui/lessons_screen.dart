@@ -144,89 +144,147 @@ class _LessonsScreenState extends State<LessonsScreen>
   }
 
   Widget _buildCarousel(List<Map<String, dynamic>> data, String emptyMessage) {
-    return CarouselSlider(
-      options: CarouselOptions(
-        height: MediaQuery.of(context).size.height * 0.75,
-        autoPlay: false,
-        enlargeCenterPage: true,
-        viewportFraction: 0.85,
-        aspectRatio: 16 / 9,
-        initialPage: 0,
-        enableInfiniteScroll: false,
-        padEnds: false,
-      ),
-      items: data.isNotEmpty
-          ? data.map((item) {
-              String videoUrl = (item['video_urls'] != null &&
-                      (item['video_urls'] as List).isNotEmpty)
-                  ? item['video_urls'][0] as String
-                  : 'https://via.placeholder.com/150';
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: CarouselSlider(
+              options: CarouselOptions(
+                height: MediaQuery.of(context).size.height * 0.7,
+                autoPlay: false,
+                enlargeCenterPage: true,
+                viewportFraction: 0.8,
+                aspectRatio: 16 / 9,
+                initialPage: 0,
+                enableInfiniteScroll: true,
+                padEnds: true,
+              ),
+              items: data.isNotEmpty
+                  ? data.map((item) {
+                      String videoUrl = (item['video_urls'] != null &&
+                              (item['video_urls'] as List).isNotEmpty)
+                          ? item['video_urls'][0] as String
+                          : 'https://via.placeholder.com/150';
 
-              return Builder(
-                builder: (BuildContext context) {
-                  return Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.symmetric(horizontal: 5.0),
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            flex: 4,
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(16)),
-                              child: _buildVideoThumbnail(videoUrl),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 2,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return Container(
+                            width: MediaQuery.of(context).size.width,
+                            margin: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Card(
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Text(
-                                    item['title'] ?? 'No Title',
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 8),
                                   Expanded(
-                                    child: Text(
-                                      item['description'] ?? 'No Description',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.grey,
+                                    flex: 3,
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.vertical(
+                                          top: Radius.circular(16)),
+                                      child: _buildVideoThumbnail(videoUrl),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            item['title'] ?? 'No Title',
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Expanded(
+                                            child: Text(
+                                              item['description'] ??
+                                                  'No Description',
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey,
+                                              ),
+                                              maxLines: 3,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          // Icons Row inside the card
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              SizedBox(width: 8), // Add space
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // TODO: Implement favorite action
+                                                  print('Favorites pressed');
+                                                },
+                                                child: Image.asset(
+                                                  'assets/icons/love.png',
+                                                  height:
+                                                      24, // Adjust height as needed
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                  width:
+                                                      16), // Space between icons
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // TODO: Implement share action
+                                                  print('Share pressed');
+                                                },
+                                                child: Image.asset(
+                                                  'assets/icons/share.png',
+                                                  height:
+                                                      24, // Adjust height as needed
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                  width:
+                                                      16), // Space between icons
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // TODO: Implement download action
+                                                  print('Download pressed');
+                                                },
+                                                child: Image.asset(
+                                                  'assets/icons/download.png',
+                                                  height:
+                                                      24, // Adjust height as needed
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                        ],
+                          );
+                        },
+                      );
+                    }).toList()
+                  : [
+                      Container(
+                        child: Center(child: Text(emptyMessage)),
                       ),
-                    ),
-                  );
-                },
-              );
-            }).toList()
-          : [
-              Container(
-                child: Center(child: Text(emptyMessage)),
-              ),
-            ],
+                    ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -270,31 +328,14 @@ class _LessonsScreenState extends State<LessonsScreen>
   }
 
   Widget _buildPlaceholder() {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Image.network(
-          'https://via.placeholder.com/400x300',
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            print('Error loading placeholder: $error');
-            return const Icon(Icons.error);
-          },
+    return Container(
+      color: Colors.grey[300],
+      child: const Center(
+        child: Text(
+          'Thumbnail loading...',
+          style: TextStyle(color: Colors.black54),
         ),
-        Center(
-          child: IconButton(
-            icon: const Icon(
-              Icons.play_circle_fill,
-              color: Colors.white,
-              size: 64,
-            ),
-            onPressed: () {
-              // TODO: Implement video playback
-              print('Play video (placeholder)');
-            },
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

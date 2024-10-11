@@ -1,22 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutor/ui/lessons_screen.dart';
-import 'package:tutor/ui/search_screen.dart'; // Import the SearchScreen
-import 'package:tutor/ui/video_upload_screen.dart'; // Import the VideoUploadScreen
-import 'package:tutor/ui/profile_screen.dart'; // Import the ProfileScreen
+import 'package:tutor/ui/search_screen.dart';
+import 'package:tutor/ui/video_upload_screen.dart';
+import 'package:tutor/ui/profile_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:tutor/ui/onboarding_screen.dart';
+import 'l10n/app_localizations.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter is initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
   await Supabase.initialize(
-    url:
-        'https://xfihpvkbzppaejluyqoq.supabase.co', // Replace with your Supabase URL
+    url: 'https://xfihpvkbzppaejluyqoq.supabase.co',
     anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmaWhwdmtienBwYWVqbHV5cW9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg1NDQzMzgsImV4cCI6MjA0NDEyMDMzOH0.U30_ovXdjGrovUZhBeVbeXtX-Xg29BPNZF9mhz7USfM', // Replace with your Supabase anon key
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmaWhwdmtienBwYWVqbHV5cW9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg1NDQzMzgsImV4cCI6MjA0NDEyMDMzOH0.U30_ovXdjGrovUZhBeVbeXtX-Xg29BPNZF9mhz7USfM',
   );
-  runApp(MeetYourTutorApp());
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? storedLanguage = prefs.getString('selectedLanguage');
+  bool onboardingComplete = prefs.getBool('onboardingComplete') ?? false;
+
+  runApp(MeetYourTutorApp(
+    storedLanguage: storedLanguage,
+    onboardingComplete: onboardingComplete,
+  ));
 }
 
-class MeetYourTutorApp extends StatelessWidget {
+class MeetYourTutorApp extends StatefulWidget {
+  final String? storedLanguage;
+  final bool onboardingComplete;
+
+  const MeetYourTutorApp({
+    Key? key,
+    this.storedLanguage,
+    required this.onboardingComplete,
+  }) : super(key: key);
+
+  @override
+  _MeetYourTutorAppState createState() => _MeetYourTutorAppState();
+}
+
+class _MeetYourTutorAppState extends State<MeetYourTutorApp> {
+  late Locale _locale;
+
+  @override
+  void initState() {
+    super.initState();
+    _locale = widget.storedLanguage != null
+        ? Locale(widget.storedLanguage!)
+        : const Locale('en');
+  }
+
+  void setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -26,7 +68,20 @@ class MeetYourTutorApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(), // Start with HomeScreen
+      locale: _locale,
+      supportedLocales: const [
+        Locale('en', 'US'),
+        Locale('sw', 'TZ'),
+      ],
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      home: widget.onboardingComplete
+          ? HomeScreen()
+          : OnboardingScreen(setLocale: setLocale),
     );
   }
 }
@@ -37,25 +92,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0; // Track the selected tab
+  int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    LessonsScreen(), // Your existing LessonsScreen
-    SearchScreen(), // New SearchScreen
-    VideoUploadScreen(), // New VideoUploadScreen
-    ProfileScreen(), // New ProfileScreen
+    LessonsScreen(),
+    SearchScreen(),
+    VideoUploadScreen(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index; // Update the selected index
+      _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex], // Display the selected screen
+      body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
@@ -75,14 +130,11 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Profile',
           ),
         ],
-        currentIndex: _selectedIndex, // Highlight the current tab
-        onTap: _onItemTapped, // Handle tap on tab
-        backgroundColor: Colors
-            .white, // Set the background color to white or any color that contrasts with your app
-        selectedItemColor: Colors.blue, // Set color for the selected item
-        unselectedItemColor: Colors.grey, // Set color for unselected items
-        showSelectedLabels: true, // Show labels for selected items
-        showUnselectedLabels: true, // Show labels for unselected items
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

@@ -1,0 +1,59 @@
+{
+    "@@locale": "en",
+    "welcome_message": "Welcome to the Lessons App!",
+    "@welcome_message": {
+      "description": "Welcome message displayed to users on the home screen"
+    },
+    "select_language": "Select Language",
+    "@select_language": {
+      "description": "Label for selecting language"
+    },
+    "english": "English",
+    "@english": {
+      "description": "English language option"
+    },
+    "swahili": "Swahili",
+    "@swahili": {
+      "description": "Swahili language option"
+    },
+    "proceed": "Proceed to Lessons",
+    "@proceed": {
+      "description": "Button label to proceed to lessons"
+    },
+    
+    "lessons_title": "Lessons",
+    "@lessons_title": {
+      "description": "Title for the lessons screen"
+    },
+    
+
+    "educational_title": "Educational",
+    "@educational_title": {
+      "description": "Title for educational lessons"
+    },
+    
+    "personal_development_title": "Personal Development",
+    "@personal_development_title": {
+      "description": "Title for personal development lessons"
+    },
+    
+    "cuisine_title": "Cuisine",
+    "@cuisine_title": {
+      "description": "Title for cuisine lessons"
+    },
+    
+    "no_educational_lessons": "No educational lessons available.",
+    "@no_educational_lessons": {
+      "description": "Message when there are no educational lessons"
+    },
+    
+    "no_personal_development_lessons": "No personal development lessons available.",
+    "@no_personal_development_lessons": {
+      "description": "Message when there are no personal development lessons"
+    },
+    
+    "no_cuisine_lessons": "No cuisine lessons available.",
+    "@no_cuisine_lessons": {
+      "description": "Message when there are no cuisine lessons"
+    }
+  }

@@ -1,0 +1,69 @@
+{
+    "@@locale": "sw",
+    "welcome_message": "Karibu kwenye Programu ya Masomo!",
+    "@welcome_message": {
+      "description": "Karibu kwenye programu ya masomo"
+    },
+    "select_language": "Chagua Lugha",
+    "@select_language": {
+      "description": "Chagua lugha"
+    },
+    "english": "Kiingereza",
+    "@english": {
+      "description": "Chagua lugha ya Kiingereza"
+    },
+    "swahili": "Kiswahili",
+    "@swahili": {
+      "description": "Chagua lugha ya Kiswahili"
+    },
+    "proceed": "Endelea kwenye Masomo",
+    "@proceed": {
+      "description": "Kitufe cha kuendelea kwenye masomo"
+    },
+  
+    "lessons_title": "Masomo",
+    "@lessons_title": {
+      "description": "Kichwa cha skrini ya masomo"
+    },
+    "search_title": "Tafuta",
+    "@search_title": {
+      "description": "Kichwa cha skrini ya kutafuta"
+    },
+    "upload_title": "Pakia",
+    "@upload_title": {
+      "description": "Kichwa cha skrini ya kupakia video"
+    },
+    "profile_title": "Profaili",
+    "@profile_title": {
+      "description": "Kichwa cha skrini ya profaili"
+    },
+         "educational_title": "Elimu",
+         "@educational_title": {
+           "description": "Kichwa cha masomo ya elimu"
+         },
+         
+         "personal_development_title": "Maendeleo ya Kifahari",
+         "@personal_development_title": {
+           "description": "Kichwa cha masomo ya maendeleo ya kifahari"
+         },
+         
+         "cuisine_title": "Mapishi",
+         "@cuisine_title": {
+           "description": "Kichwa cha masomo ya mapishi"
+         },
+         
+         "no_educational_lessons": "Hakuna masomo ya elimu yaliyopo.",
+         "@no_educational_lessons": {
+           "description": "Ujumbe wakati hakuna masomo ya elimu."
+         },
+         
+         "no_personal_development_lessons": "Hakuna masomo ya maendeleo ya kifahari yaliyopo.",
+         "@no_personal_development_lessons": {
+           "description": "Ujumbe wakati hakuna masomo ya maendeleo ya kifahari."
+         },
+         
+         "no_cuisine_lessons": "Hakuna masomo ya mapishi yaliyopo.",
+         "@no_cuisine_lessons": {
+           "description": "Ujumbe wakati hakuna masomo ya mapishi."
+         }
+      }
