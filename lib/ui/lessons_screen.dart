@@ -6,6 +6,14 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tutor/ui/base_scaffold.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+
 class LessonsScreen extends StatefulWidget {
   const LessonsScreen({Key? key}) : super(key: key);
 
@@ -230,7 +238,9 @@ class _LessonsScreenState extends State<LessonsScreen>
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              SizedBox(width: 8), // Add space
+                                              SizedBox(
+                                                  width:
+                                                      8), // Add space before the first icon
                                               GestureDetector(
                                                 onTap: () {
                                                   // TODO: Implement favorite action
@@ -244,7 +254,7 @@ class _LessonsScreenState extends State<LessonsScreen>
                                               ),
                                               SizedBox(
                                                   width:
-                                                      16), // Space between icons
+                                                      16), // Space between love and share icons
                                               GestureDetector(
                                                 onTap: () {
                                                   // TODO: Implement share action
@@ -258,7 +268,7 @@ class _LessonsScreenState extends State<LessonsScreen>
                                               ),
                                               SizedBox(
                                                   width:
-                                                      16), // Space between icons
+                                                      16), // Space between share and download icons
                                               GestureDetector(
                                                 onTap: () {
                                                   // TODO: Implement download action
@@ -270,6 +280,9 @@ class _LessonsScreenState extends State<LessonsScreen>
                                                       24, // Adjust height as needed
                                                 ),
                                               ),
+                                              SizedBox(
+                                                  width:
+                                                      8), // Add space after the last icon if needed
                                             ],
                                           ),
                                         ],
@@ -316,11 +329,11 @@ class _LessonsScreenState extends State<LessonsScreen>
                 child: IconButton(
                   icon: const Icon(
                     Icons.play_circle_fill,
-                    size: 64,
                     color: Colors.white,
+                    size: 50,
                   ),
                   onPressed: () {
-                    // TODO: Implement video play action
+                    // TODO: Play video
                     print('Play video: $videoUrl');
                   },
                 ),
@@ -338,10 +351,9 @@ class _LessonsScreenState extends State<LessonsScreen>
     return Container(
       color: Colors.grey[300],
       child: const Center(
-        child: Icon(
-          Icons.video_library,
-          size: 64,
-          color: Colors.grey,
+        child: Text(
+          'Video Thumbnail Loading...',
+          style: TextStyle(color: Colors.black),
         ),
       ),
     );
