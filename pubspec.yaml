@@ -25,6 +25,8 @@ dependencies:
   chewie: ^1.8.5
   share_plus: ^10.0.3
   dio: ^5.7.0
+  flutter_tts: ^4.0.2
+  speech_to_text: ^7.0.0
 
 dev_dependencies:
   flutter_test:

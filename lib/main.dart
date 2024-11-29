@@ -5,8 +5,10 @@ import 'package:tutor/ui/lessons_screen.dart';
 import 'package:tutor/ui/search_screen.dart';
 import 'package:tutor/ui/video_upload_screen.dart';
 import 'package:tutor/ui/profile_screen.dart';
+import 'package:tutor/ui/subscription_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tutor/ui/onboarding_screen.dart';
+import 'package:tutor/services/auth_service.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
@@ -93,6 +95,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  final AuthService _authService = AuthService();
 
   final List<Widget> _screens = [
     LessonsScreen(),
@@ -101,7 +104,25 @@ class _HomeScreenState extends State<HomeScreen> {
     ProfileScreen(),
   ];
 
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index) async {
+    if (index == 2) {
+      // Upload screen index
+      final user = await _authService.getCurrentUser();
+      if (user != null) {
+        final isSubscribed = await _authService.isUserSubscribed(user.id);
+        if (!isSubscribed) {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => SubscriptionPage()),
+          );
+          return;
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please log in to upload lessons')),
+        );
+        return;
+      }
+    }
     setState(() {
       _selectedIndex = index;
     });

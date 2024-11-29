@@ -134,14 +134,15 @@ class _LessonsScreenState extends State<LessonsScreen>
 
   Future<void> _downloadLesson(Map<String, dynamic> lesson) async {
     final dio = Dio();
-    final tempDir = await getTemporaryDirectory();
+    final appDir =
+        await getApplicationDocumentsDirectory(); // More permanent than temp directory
     final fileName = '${lesson['title']}.mp4';
-    final savePath = '${tempDir.path}/$fileName';
+    final savePath = '${appDir.path}/$fileName';
 
     try {
       await dio.download(lesson['video_urls'][0], savePath);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Downloaded: $fileName')),
+        SnackBar(content: Text('Downloaded to your device: $fileName')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -196,137 +197,127 @@ class _LessonsScreenState extends State<LessonsScreen>
   }
 
   Widget _buildCarousel(List<Map<String, dynamic>> data, String emptyMessage) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(
+    return ListView(
+      children: [
+        CarouselSlider(
+          options: CarouselOptions(
             height: MediaQuery.of(context).size.height * 0.7,
-            child: CarouselSlider(
-              options: CarouselOptions(
-                height: MediaQuery.of(context).size.height * 0.7,
-                autoPlay: false,
-                enlargeCenterPage: true,
-                viewportFraction: 0.8,
-                aspectRatio: 16 / 9,
-                initialPage: 0,
-                enableInfiniteScroll: true,
-                padEnds: true,
-              ),
-              items: data.isNotEmpty
-                  ? data.map((item) {
-                      String videoUrl = (item['video_urls'] != null &&
-                              (item['video_urls'] as List).isNotEmpty)
-                          ? item['video_urls'][0] as String
-                          : 'https://via.placeholder.com/150';
+            autoPlay: false,
+            enlargeCenterPage: true,
+            viewportFraction: 0.8,
+            aspectRatio: 16 / 9,
+            initialPage: 0,
+            enableInfiniteScroll: true,
+            padEnds: true,
+          ),
+          items: data.isNotEmpty
+              ? data.map((item) {
+                  String videoUrl = (item['video_urls'] != null &&
+                          (item['video_urls'] as List).isNotEmpty)
+                      ? item['video_urls'][0] as String
+                      : 'https://via.placeholder.com/150';
 
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Card(
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: GestureDetector(
-                                      onTap: () => _playVideo(videoUrl),
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            const BorderRadius.vertical(
-                                                top: Radius.circular(16)),
-                                        child: _buildVideoThumbnail(videoUrl),
-                                      ),
-                                    ),
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width,
+                        margin: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Card(
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: GestureDetector(
+                                  onTap: () => _playVideo(videoUrl),
+                                  child: ClipRRect(
+                                    borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(16)),
+                                    child: _buildVideoThumbnail(videoUrl),
                                   ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        item['title'] ?? 'No Title',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Expanded(
+                                        child: Text(
+                                          item['description'] ??
+                                              'No Description',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Text(
-                                            item['title'] ?? 'No Title',
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
+                                          IconButton(
+                                            icon: Image.asset(
+                                              'assets/icons/love.png',
+                                              height: 24,
                                             ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
+                                            onPressed: () =>
+                                                _toggleFavorite(item),
                                           ),
-                                          const SizedBox(height: 8),
-                                          Expanded(
-                                            child: Text(
-                                              item['description'] ??
-                                                  'No Description',
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.grey,
-                                              ),
-                                              maxLines: 3,
-                                              overflow: TextOverflow.ellipsis,
+                                          IconButton(
+                                            icon: Image.asset(
+                                              'assets/icons/share.png',
+                                              height: 24,
                                             ),
+                                            onPressed: () => _shareLesson(item),
                                           ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              SizedBox(width: 8),
-                                              GestureDetector(
-                                                onTap: () =>
-                                                    _toggleFavorite(item),
-                                                child: Image.asset(
-                                                  'assets/icons/love.png',
-                                                  height: 24,
-                                                ),
-                                              ),
-                                              SizedBox(width: 16),
-                                              GestureDetector(
-                                                onTap: () => _shareLesson(item),
-                                                child: Image.asset(
-                                                  'assets/icons/share.png',
-                                                  height: 24,
-                                                ),
-                                              ),
-                                              SizedBox(width: 16),
-                                              GestureDetector(
-                                                onTap: () =>
-                                                    _downloadLesson(item),
-                                                child: Image.asset(
-                                                  'assets/icons/download.png',
-                                                  height: 24,
-                                                ),
-                                              ),
-                                              SizedBox(width: 8),
-                                            ],
+                                          IconButton(
+                                            icon: Image.asset(
+                                              'assets/icons/download.png',
+                                              height: 24,
+                                            ),
+                                            onPressed: () =>
+                                                _downloadLesson(item),
                                           ),
                                         ],
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            ],
+                          ),
+                        ),
                       );
-                    }).toList()
-                  : [
-                      Container(
-                        child: Center(child: Text(emptyMessage)),
-                      ),
-                    ],
-            ),
-          ),
-        ],
-      ),
+                    },
+                  );
+                }).toList()
+              : [
+                  Container(
+                    child: Center(child: Text(emptyMessage)),
+                  ),
+                ],
+        ),
+      ],
     );
   }
 
