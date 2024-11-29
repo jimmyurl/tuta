@@ -65,7 +65,7 @@ class _LessonsScreenState extends State<LessonsScreen>
           .from(table)
           .select('video_urls, title, description')
           .order('id', ascending: true)
-          .limit(10);
+          .limit(30);
 
       if (response != null && response.isNotEmpty) {
         final List<Map<String, dynamic>> data = (response as List<dynamic>)
