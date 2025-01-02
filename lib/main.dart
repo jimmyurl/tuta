@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tutor/ui/lessons_screen.dart';
+import 'package:tutor/ui/feed_screen.dart';  // Add this import
 import 'package:tutor/ui/search_screen.dart';
 import 'package:tutor/ui/video_upload_screen.dart';
 import 'package:tutor/ui/profile_screen.dart';
@@ -69,6 +69,20 @@ class _MeetYourTutorAppState extends State<MeetYourTutorApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        useMaterial3: true, // Enable Material 3
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.light,
+        ),
+      ),
+      darkTheme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
+        ),
       ),
       locale: _locale,
       supportedLocales: const [
@@ -82,13 +96,15 @@ class _MeetYourTutorAppState extends State<MeetYourTutorApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       home: widget.onboardingComplete
-          ? HomeScreen()
+          ? const HomeScreen()
           : OnboardingScreen(setLocale: setLocale),
     );
   }
 }
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -98,27 +114,28 @@ class _HomeScreenState extends State<HomeScreen> {
   final AuthService _authService = AuthService();
 
   final List<Widget> _screens = [
-    LessonsScreen(),
-    SearchScreen(),
-    VideoUploadScreen(),
-    ProfileScreen(),
+    const FeedScreen(),  // Replace LessonsScreen with FeedScreen
+     SearchScreen(),
+     VideoUploadScreen(),
+    const ProfileScreen(),
   ];
 
   void _onItemTapped(int index) async {
-    if (index == 2) {
-      // Upload screen index
+    if (index == 2) { // Upload screen index
       final user = await _authService.getCurrentUser();
       if (user != null) {
         final isSubscribed = await _authService.isUserSubscribed(user.id);
         if (!isSubscribed) {
+          if (!mounted) return;
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => SubscriptionPage()),
+            MaterialPageRoute(builder: (context) => const SubscriptionPage()),
           );
           return;
         }
       } else {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please log in to upload lessons')),
+          const SnackBar(content: Text('Please log in to upload lessons')),
         );
         return;
       }
@@ -131,31 +148,31 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('assets/icons/home.png')),
+      body: IndexedStack(  // Use IndexedStack to preserve state
+        index: _selectedIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: NavigationBar(  // Use NavigationBar instead of BottomNavigationBar for Material 3
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: _onItemTapped,
+        destinations: [
+          NavigationDestination(
+            icon: ImageIcon(const AssetImage('assets/icons/home.png')),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('assets/icons/search.png')),
+          NavigationDestination(
+            icon: ImageIcon(const AssetImage('assets/icons/search.png')),
             label: 'Search',
           ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('assets/icons/upload.png')),
+          NavigationDestination(
+            icon: ImageIcon(const AssetImage('assets/icons/upload.png')),
             label: 'Upload',
           ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('assets/icons/profile.png')),
+          NavigationDestination(
+            icon: ImageIcon(const AssetImage('assets/icons/profile.png')),
             label: 'Profile',
           ),
         ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
       ),
     );
   }
