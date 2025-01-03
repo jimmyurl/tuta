@@ -15,9 +15,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
-    url: 'https://xfihpvkbzppaejluyqoq.supabase.co',
+    url: 'your-supabase-url',
     anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmaWhwdmtienBwYWVqbHV5cW9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg1NDQzMzgsImV4cCI6MjA0NDEyMDMzOH0.U30_ovXdjGrovUZhBeVbeXtX-Xg29BPNZF9mhz7USfM',
+        'your-anon-key',
   );
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -65,7 +65,7 @@ class _MeetYourTutorAppState extends State<MeetYourTutorApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'MeetYourTutor',
+      title: 'KizaziHakika',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -114,14 +114,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final AuthService _authService = AuthService();
 
   final List<Widget> _screens = [
-    const FeedScreen(),  // Replace LessonsScreen with FeedScreen
+    const FeedScreen(),  
      SearchScreen(),
      VideoUploadScreen(),
     const ProfileScreen(),
   ];
 
   void _onItemTapped(int index) async {
-    if (index == 2) { // Upload screen index
+    if (index == 2) { 
       final user = await _authService.getCurrentUser();
       if (user != null) {
         final isSubscribed = await _authService.isUserSubscribed(user.id);
@@ -148,11 +148,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(  // Use IndexedStack to preserve state
+      body: IndexedStack(  
         index: _selectedIndex,
         children: _screens,
       ),
-      bottomNavigationBar: NavigationBar(  // Use NavigationBar instead of BottomNavigationBar for Material 3
+      bottomNavigationBar: NavigationBar(  
         selectedIndex: _selectedIndex,
         onDestinationSelected: _onItemTapped,
         destinations: [
